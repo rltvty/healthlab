@@ -1,0 +1,77 @@
+name = "Lifted"
+
+[defaults]
+sets = 3
+reps = 8
+work_mode = "reps" # "lap" is a manual fallback; reps then become a description only.
+
+# Timing placeholders until the class/watch test. For manual advance, use
+# mode = "lap" and remove seconds. No configuration enables watch Auto Set.
+[rest]
+mode = "time"
+seconds = 30
+
+[transition]
+mode = "time"
+seconds = 15
+
+[[before]]
+name = "Warmup"
+kind = "warmup"
+mode = "time"
+seconds = 300
+
+[[stations]]
+number = 1
+name = "Deadlift"
+exercise = "Romanian Deadlift"
+
+[[stations]]
+number = 2
+name = "Arms"
+# No default mapping: this station can be shoulders, triceps, or biceps.
+# Add an exact catalog name if desired, e.g. exercise = "Dumbbell Biceps Curl".
+
+[[stations]]
+number = 3
+name = "Lunge"
+exercise = "Dumbbell Lunge" # Representative mapping; variations remain possible.
+
+[[stations]]
+number = 4
+name = "Machine Pull"
+# No default mapping: this station can be a pulldown or seated row.
+
+[[stations]]
+number = 5
+name = "Leg Press"
+exercise = "Leg Press"
+
+[[stations]]
+number = 6
+name = "Chest Press"
+exercise = "Dumbbell Bench Press" # Representative mapping, including incline days.
+
+[[after]]
+name = "Break"
+kind = "rest"
+mode = "time"
+seconds = 60
+
+[[after]]
+name = "Core"
+kind = "interval"
+mode = "time"
+seconds = 120
+
+[[after]]
+name = "Stretching"
+kind = "cooldown"
+mode = "time"
+seconds = 300
+
+[[after]]
+name = "Breathing"
+kind = "cooldown"
+mode = "time"
+seconds = 120
