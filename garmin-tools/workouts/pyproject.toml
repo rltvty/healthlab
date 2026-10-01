@@ -1,0 +1,35 @@
+[project]
+name = "garmin-workouts"
+version = "0.1.0"
+description = "Personal tooling for structured Garmin strength workouts"
+readme = "README.md"
+authors = [
+    { name = "Relativity", email = "rltvty@gmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "garminconnect>=0.3.17",
+    "platformdirs>=4.12.2",
+    "typer>=0.27.2",
+]
+
+[project.scripts]
+garmin-tools = "garmin_workouts.cli:app"
+
+[build-system]
+requires = ["uv_build>=0.11.6,<0.12.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "ruff>=0.16.9",
+]
+
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+extend-exclude = [".local"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]

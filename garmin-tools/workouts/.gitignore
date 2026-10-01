@@ -1,0 +1,21 @@
+# Local credentials and Garmin session artifacts
+.env
+.env.*
+!.env.example
+.garminconnect/
+.garth/
+.tokens/
+tokens/
+oauth1_token.json
+oauth2_token.json
+garmin_tokens.json
+
+# Private API responses and experimental workout payloads
+.local/
+
+# Python tooling
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+dist/
