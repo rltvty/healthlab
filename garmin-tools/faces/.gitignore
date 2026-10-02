@@ -1,0 +1,10 @@
+.local/
+bin/
+build/
+*.prg
+*.iq
+*.debug.xml
+*.der
+*.pem
+*.key
+developer_key*
