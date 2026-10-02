@@ -16,6 +16,7 @@ from garminconnect import (
 
 from garmin_workouts.auth import connect, session_directory
 from garmin_workouts.class_workout import build_rotation, load_config, summarize
+from garmin_workouts.lifted_cli import app as lifted_app
 from garmin_workouts.sync import SyncError, apply_sync, plan_sync
 from garmin_workouts.workouts import build_test_workout, plan_test_workout
 
@@ -28,6 +29,7 @@ exercise_app = typer.Typer(help="Search the bundled exercise catalog.", no_args_
 workout_app = typer.Typer(help="Inspect workouts and create a strength test.", no_args_is_help=True)
 app.add_typer(exercise_app, name="exercises")
 app.add_typer(workout_app, name="workouts")
+app.add_typer(lifted_app, name="lifted")
 
 
 @workout_app.command("sync")

@@ -1,0 +1,111 @@
+# Exact Lifted names mapped to Garmin's catalog. Weight is total external load.
+# Add reviewed mappings here when a new exercise appears; do not guess by name.
+# Covers all 18 station/exercise pairs in the 74-class history inspected 2026-10-02.
+# Pulse and palms-in variants use broader Garmin labels, noted below.
+[[exercises]]
+lifted = "BB Romanian Deadlift"
+station = 1
+garmin = "Romanian Deadlift"
+weight_multiplier = 1
+
+[[exercises]]
+lifted = "DB Standing Triceps Extension"
+station = 2
+garmin = "Overhead Dumbbell Triceps Extension"
+weight_multiplier = 1 # One dumbbell; other dumbbell arm exercises normally use two.
+
+[[exercises]]
+lifted = "DB Lateral Raises"
+station = 2
+garmin = "Dumbbell Lateral Raise"
+weight_multiplier = 2
+
+[[exercises]]
+lifted = "DB Standing Biceps Curl"
+station = 2
+garmin = "Standing Dumbbell Biceps Curl"
+weight_multiplier = 2
+
+[[exercises]]
+lifted = "DB Standing Palms In Shoulder Press"
+station = 2
+garmin = "Dumbbell Shoulder Press" # Garmin catalog has no palms-in variant.
+weight_multiplier = 2
+
+[[exercises]]
+lifted = "DB Standing Shoulder Press"
+station = 2
+garmin = "Dumbbell Shoulder Press"
+weight_multiplier = 2
+
+[[exercises]]
+lifted = "DB Reverse Lunge On The Spot"
+station = 3
+garmin = "Dumbbell Reverse Lunge"
+weight_multiplier = 2
+
+[[exercises]]
+lifted = "DB Bulgarian Split Squat"
+station = 3
+garmin = "Dumbbell Bulgarian Split Squat"
+weight_multiplier = 2
+
+[[exercises]]
+lifted = "DB Lunge Alter. On The Spot"
+station = 3
+garmin = "Alternating Dumbbell Lunge"
+weight_multiplier = 2
+
+[[exercises]]
+lifted = "DB Lunge Pulse"
+station = 3
+garmin = "Dumbbell Lunge" # Pulse variation is not represented in Garmin's catalog.
+weight_multiplier = 2
+
+[[exercises]]
+lifted = "DB Reverse Lunge Pulse"
+station = 3
+garmin = "Dumbbell Reverse Lunge" # Pulse variation is not represented in Garmin's catalog.
+weight_multiplier = 2
+
+[[exercises]]
+lifted = "Lat Pull V Bar"
+station = 4
+garmin = "Close-grip Lat Pull-down"
+weight_multiplier = 1
+
+[[exercises]]
+lifted = "Lat Pull Normal Grip"
+station = 4
+garmin = "Lat Pull-down"
+weight_multiplier = 1
+
+[[exercises]]
+lifted = "Seated Cable Row Normal Grip"
+station = 4
+garmin = "Seated Cable Row"
+weight_multiplier = 1
+
+[[exercises]]
+lifted = "Seated Cable Row V Bar"
+station = 4
+garmin = "V-grip Cable Row"
+weight_multiplier = 1
+
+[[exercises]]
+lifted = "Leg Press Normal Stance"
+station = 5
+garmin = "Leg Press"
+weight_multiplier = 1
+
+[[exercises]]
+lifted = "DB Chest Press Incline"
+station = 6
+garmin = "Incline Dumbbell Bench Press"
+weight_multiplier = 2
+
+[[exercises]]
+lifted = "DB Chest Press Flat"
+station = 6
+garmin = "Dumbbell Bench Press"
+weight_multiplier = 2

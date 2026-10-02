@@ -142,6 +142,73 @@ Garmin Connect. Timed Leg Press advancement still needs watch testing. Auto Set
 on rep-based sets is inconclusive: the initial class test used the lap button,
 possibly before automatic detection had time to trigger.
 
+## Lifted dashboard
+
+```sh
+uv run garmin-tools lifted login
+uv run garmin-tools lifted logs --date 2026-10-02
+uv run garmin-tools lifted logs --output .local/exercise_logs.json
+uv run garmin-tools lifted logs --source .local/exercise_logs.json --date 2026-10-02
+```
+
+Login uses Lifted's Firebase email/password flow. Email is visible; password input
+is hidden and never stored. Refreshable tokens are stored separately from Garmin,
+on macOS at `~/Library/Application Support/garmin-workouts/lifted/session.json`.
+Google-only sign-in, MFA, or CAPTCHA may require a browser; this CLI currently
+supports email/password only.
+
+Log commands are read-only. The summary omits Lifted's prescribed reps; Garmin's
+recorded reps must be preserved when reconciling activities. Exported raw JSON
+retains the original response. Weights are shown as Lifted records them; dumbbell
+weights need exercise-specific interpretation before importing into Garmin.
+
+## Update recorded activities from Lifted
+
+```sh
+uv run garmin-tools lifted sync
+uv run garmin-tools lifted sync --days 7 --apply
+```
+
+The default is a read-only preview for the last seven calendar days. Use
+`--date YYYY-MM-DD` for one day. Both Garmin and Lifted sessions must be logged in.
+The command matches `Lifted 1`–`Lifted 6` strength activities to a single attended
+class on the same Berlin date, within 45 minutes of the activity start. It updates
+exercise names and total weights for the 18 lifting sets, preserving watch reps,
+timings, and all other entries, including warmup/core/cooldown edits. Re-running
+skips activities whose sets already match.
+
+Exercise mappings live in [config/lifted-exercises.toml](config/lifted-exercises.toml).
+Each entry specifies an exact Lifted name, station, Garmin catalog name, and
+weight multiplier. Barbell and machine loads are unchanged; paired dumbbells
+are doubled, with the single-dumbbell triceps extension exception. Add a reviewed
+mapping when a new exercise appears; use `--mappings PATH` for another file.
+
+The supported recorded layout is six stations of three exercise/rest pairs,
+with warmup and the standard after blocks. Ambiguous matches, missing weights,
+unknown exercises, and changed layouts stop the preview before any activity is
+written. The mapping uses recorded step references and the rotation number,
+not the current workout template.
+
+Before each write, the command saves the complete original exercise-set payload,
+proposed payload, matched Lifted class, activity listing, and change list. Backups
+default to `~/Library/Application Support/garmin-workouts/activity-backups` on
+macOS; override with `--backups PATH`. Files are private to your user. It checks
+for intervening edits and verifies Garmin's saved response. A network or readback
+failure stops the run; earlier verified activities may already have been updated.
+Avoid simultaneous sync/edit commands.
+
+To undo one update, use the backup directory printed by the command:
+
+```sh
+uv run garmin-tools lifted restore BACKUP_DIRECTORY
+uv run garmin-tools lifted restore BACKUP_DIRECTORY --apply
+```
+
+Restore previews by default and refuses to overwrite newer edits. Backups cover
+the exercise sets being edited; the original FIT recording is not modified.
+Legacy downloads and investigation scripts in `.local` are not required by these
+commands and can be retained as historical backups.
+
 ## Development
 
 ```sh
