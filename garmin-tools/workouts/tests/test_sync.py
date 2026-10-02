@@ -21,7 +21,8 @@ def test_server_metadata_does_not_trigger_update(payload):
     stored.update(workoutId=123, author={"name": "private"})
     stored["sportType"]["displayOrder"] = 3
     for step in stored["workoutSegments"][0]["workoutSteps"]:
-        step.update(stepId=456, childStepId=1, weightValue=None)
+        step.update(stepId=456, childStepId=1)
+        step.setdefault("weightValue", None)
         step["stepType"]["displayOrder"] = 99
     assert canonical(stored) == canonical(payload)
     stored["workoutSegments"][0]["workoutSteps"][1]["endConditionValue"] = 9

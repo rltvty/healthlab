@@ -42,12 +42,15 @@ def test_all_six_rotations_have_same_stations_and_unique_step_orders():
         assert len(groups) == 6
         assert all(s["numberOfIterations"] == 3 for s in groups)
         steps = list(expand(steps))
-        work = [s for s in steps if s["endCondition"]["conditionTypeKey"] == "reps"]
+        work = [s for s in steps if ": target " in s["description"]]
         assert len(work) == 18
         assert [int(s["description"].split(" - ")[0]) for s in work] == [
             n for n in expected for _ in range(3)
         ]
-        assert all(s["endConditionValue"] == 8 for s in work)
+        for step in work:
+            timed = step["description"].startswith("5 - Leg Press:")
+            assert step["endConditionValue"] == (30 if timed else 8)
+            assert step["endCondition"]["conditionTypeKey"] == ("time" if timed else "reps")
         rests = [s for s in steps if s["description"].startswith("Rest - ")]
         assert len(rests) == 18
         assert all(s["endConditionValue"] == 30 for s in rests)
@@ -65,6 +68,61 @@ def test_all_six_rotations_have_same_stations_and_unique_step_orders():
         ]
 
 
+def test_timing_changes_only_leg_press_end_condition():
+    config = load_config(CONFIG)
+    previous = config.model_copy(deep=True)
+    previous.stations[4].work_mode = None
+    previous.stations[4].work_seconds = None
+    for start in range(1, 7):
+        current = build_rotation(config, start).to_dict()
+        old = build_rotation(previous, start).to_dict()
+        for step in flatten(current["workoutSegments"][0]["workoutSteps"]):
+            if step.get("description", "").startswith("5 - Leg Press:"):
+                step["endCondition"].update(
+                    conditionTypeId=10, conditionTypeKey="reps", displayOrder=10
+                )
+                step["endConditionValue"] = 8
+        assert current == old
+
+
+def test_warmup_category_and_bodyweight_only_change_warmup():
+    config = load_config(CONFIG)
+    previous = config.model_copy(deep=True)
+    previous.before[0].category = None
+    previous.before[0].weight = None
+    for start in range(1, 7):
+        current = build_rotation(config, start).to_dict()
+        old = build_rotation(previous, start).to_dict()
+        warmup = current["workoutSegments"][0]["workoutSteps"][0]
+        assert warmup.pop("category") == "WARM_UP"
+        assert "exerciseName" not in warmup
+        assert warmup.pop("weightValue") == 0
+        assert warmup.pop("weightUnit")["unitKey"] == "kilogram"
+        assert warmup["stepType"]["stepTypeKey"] == "warmup"
+        assert warmup["endConditionValue"] == 360
+        assert current == old
+
+
+@pytest.mark.parametrize(
+    "category,weight", [("INVALID", None), (None, "body"), ("WARM_UP", "heavy")]
+)
+def test_invalid_block_exercise_settings_rejected(category, weight):
+    data = load_config(CONFIG).model_dump(exclude_none=True)
+    data["before"][0].update(category=category, weight=weight)
+    with pytest.raises(ValidationError):
+        ClassConfig.model_validate(data)
+
+
+@pytest.mark.parametrize(
+    "mode,seconds", [("time", None), ("time", 0), ("reps", 30), ("lap", 30), (None, 30)]
+)
+def test_invalid_work_timing_rejected(mode, seconds):
+    data = load_config(CONFIG).model_dump(exclude_none=True)
+    data["stations"][4].update(work_mode=mode, work_seconds=seconds)
+    with pytest.raises(ValidationError):
+        ClassConfig.model_validate(data)
+
+
 def test_unknown_station_exercises_are_not_fabricated():
     steps = build_rotation(load_config(CONFIG), 1).to_dict()["workoutSegments"][0]["workoutSteps"]
     steps = list(expand(steps))
@@ -80,6 +138,8 @@ def test_defaults_overrides_and_manual_modes_apply_to_every_rotation():
     data = load_config(CONFIG).model_dump(exclude_none=True)
     data["defaults"] = {"sets": 2, "reps": 10, "work_mode": "lap"}
     data["stations"][0].update(sets=1, reps=6, work_mode="reps")
+    data["stations"][4].pop("work_mode")
+    data["stations"][4].pop("work_seconds")
     data["rest"] = {"mode": "lap"}
     data["transition"] = {"mode": "lap"}
     data["before"][0]["enabled"] = False
@@ -129,6 +189,8 @@ def test_generation_cli_is_offline(monkeypatch):
     summaries = json.loads(result.stdout)
     assert len(summaries) == 6
     assert summaries[0]["unmappedStations"] == [2, 4]
+    assert summaries[0]["stations"][4]["workMode"] == "time"
+    assert summaries[0]["stations"][4]["workSeconds"] == 30
     result = runner.invoke(
         cli.app,
         ["workouts", "generate", "--config", str(CONFIG), "--start", "3", "--format", "json"],

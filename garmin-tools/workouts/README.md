@@ -108,6 +108,16 @@ For manually advanced work sets, set `work_mode = "lap"`; the rep goal then
 appears in the description instead of controlling the step's end condition.
 These options do not configure or guarantee Auto Set behavior.
 
+Blocks can specify an exercise `category` and `weight = "body"` (zero external
+load). Warmup uses `category = "WARM_UP"`, with no specific exercise subtype,
+and retains its six-minute timer. Core uses `category = "CORE"` with bodyweight
+and a two-minute timer. Their display in future watch recordings still
+needs verification.
+
+For timed work sets, set a station's `work_mode = "time"` and `work_seconds = 30`.
+Leg Press currently uses this mode: three rounds of 30 seconds work and 30 seconds
+rest. The 8-rep goal stays in the description. Other stations retain rep targets.
+
 ## Upload and send to your watch
 
 ```sh
@@ -128,7 +138,9 @@ saved steps, including unchanged workouts. Sync Garmin Connect with your watch
 to download them; a successful queue request does not confirm delivery.
 
 The default six rotations have been uploaded and their saved steps verified in
-Garmin Connect. Watch behavior, including Auto Set, still needs testing.
+Garmin Connect. Timed Leg Press advancement still needs watch testing. Auto Set
+on rep-based sets is inconclusive: the initial class test used the lap button,
+possibly before automatic detection had time to trigger.
 
 ## Development
 

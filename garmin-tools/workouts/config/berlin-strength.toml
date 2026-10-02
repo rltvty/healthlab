@@ -5,7 +5,7 @@ sets = 3
 reps = 8
 work_mode = "reps" # "lap" is a manual fallback; reps then become a description only.
 
-# Timing placeholders until the class/watch test. For manual advance, use
+# For manual advance of timed blocks, use
 # mode = "lap" and remove seconds. No configuration enables watch Auto Set.
 [rest]
 mode = "time"
@@ -18,8 +18,10 @@ seconds = 15
 [[before]]
 name = "Warmup"
 kind = "warmup"
+category = "WARM_UP"
+weight = "body"
 mode = "time"
-seconds = 300
+seconds = 360
 
 [[stations]]
 number = 1
@@ -46,6 +48,8 @@ name = "Machine Pull"
 number = 5
 name = "Leg Press"
 exercise = "Leg Press"
+work_mode = "time"
+work_seconds = 30
 
 [[stations]]
 number = 6
@@ -61,6 +65,8 @@ seconds = 60
 [[after]]
 name = "Core"
 kind = "interval"
+category = "CORE"
+weight = "body"
 mode = "time"
 seconds = 120
 
@@ -68,7 +74,7 @@ seconds = 120
 name = "Stretching"
 kind = "cooldown"
 mode = "time"
-seconds = 300
+seconds = 240
 
 [[after]]
 name = "Breathing"

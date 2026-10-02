@@ -6,6 +6,7 @@ from typing import Annotated, Literal, Self
 
 from garminconnect import exercises
 from garminconnect.workout import (
+    WEIGHT_UNIT_KILOGRAM,
     ExecutableStep,
     StrengthWorkout,
     WorkoutSegment,
@@ -38,6 +39,16 @@ class Block(Timing):
     name: Name
     kind: Literal["warmup", "interval", "rest", "cooldown"]
     enabled: bool = True
+    category: str | None = None
+    weight: Literal["body"] | None = None
+
+    @model_validator(mode="after")
+    def known_category(self) -> Self:
+        if self.category is not None and self.category not in exercises.CATEGORIES:
+            raise ValueError(f"Unknown exercise category: {self.category}")
+        if self.weight is not None and self.category is None:
+            raise ValueError("Block weight requires an exercise category")
+        return self
 
 
 class Defaults(ConfigModel):
@@ -52,10 +63,15 @@ class Station(ConfigModel):
     exercise: Name | None = None
     sets: PositiveInt | None = None
     reps: PositiveInt | None = None
-    work_mode: Literal["reps", "lap"] | None = None
+    work_mode: Literal["reps", "lap", "time"] | None = None
+    work_seconds: PositiveInt | None = None
 
     @model_validator(mode="after")
     def known_exercise(self) -> Self:
+        if self.work_mode == "time" and self.work_seconds is None:
+            raise ValueError("time work mode requires work_seconds")
+        if self.work_mode != "time" and self.work_seconds is not None:
+            raise ValueError("work_seconds requires time work mode")
         if self.exercise is not None and exercises.resolve(self.exercise) is None:
             raise ValueError(f"Unknown catalog exercise: {self.exercise}; use exercises search")
         return self
@@ -130,7 +146,14 @@ def build_rotation(config: ClassConfig, start: int) -> StrengthWorkout:
         nonlocal order
         for block in blocks:
             if block.enabled:
-                steps.append(make_step(order, block.kind, block.mode, block.seconds, block.name))
+                step = make_step(order, block.kind, block.mode, block.seconds, block.name)
+                if block.category is not None:
+                    step = step.model_copy(update={"category": block.category})
+                if block.weight == "body":
+                    step = step.model_copy(
+                        update={"weightValue": 0.0, "weightUnit": dict(WEIGHT_UNIT_KILOGRAM)}
+                    )
+                steps.append(step)
                 order += 1
 
     append_blocks(config.before)
@@ -148,7 +171,7 @@ def build_rotation(config: ClassConfig, start: int) -> StrengthWorkout:
                         order + 1,
                         "interval",
                         mode,
-                        reps,
+                        station.work_seconds if mode == "time" else reps,
                         f"{label}: target {reps} reps",
                         station.exercise,
                     ),
@@ -201,6 +224,7 @@ def summarize(config: ClassConfig, start: int, workout: StrengthWorkout) -> dict
                 "sets": station.sets or config.defaults.sets,
                 "reps": station.reps or config.defaults.reps,
                 "workMode": station.work_mode or config.defaults.work_mode,
+                "workSeconds": station.work_seconds,
             }
             for station in rotate_stations(config, start)
         ],
